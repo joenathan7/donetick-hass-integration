@@ -22,9 +22,12 @@ const hass={locale:{language:'en'},states:{'todo.all':{state:'2',attributes:{con
 const card=document.createElement('donetick-dev-user-todo-card');card.setConfig({entity:'todo.all',user_id:1});card.hass=hass;document.body.append(card);
 const root=card.shadowRoot;
 const weeklyTask=hass.states['todo.all'].attributes.tasks[0];
-Object.assign(weeklyTask,{points:10,frequency_type:'interval',frequency:6,interval_type:'weeks'});
-assert.equal(root.querySelector('.task-points'),null);
+Object.assign(weeklyTask,{points:10,frequency_type:'interval',frequency:6,interval_type:'weeks'});card.hass=hass;
+// Points show by default; recurrence stays opt-in.
+assert.equal(root.querySelector('.task-points').textContent,'10');
 assert.equal(root.querySelector('.task-recurrence'),null);
+card.setConfig({entity:'todo.all',user_id:1,show_points:false});
+assert.equal(root.querySelector('.task-points'),null);
 card.setConfig({entity:'todo.all',user_id:1,show_points:true,show_recurrence:true});
 assert.equal(root.querySelector('.task-points').textContent,'10');
 assert.equal(root.querySelector('.task-points').getAttribute('aria-label'),'10 points');
@@ -35,7 +38,7 @@ assert.equal(root.querySelector('.task-recurrence').parentElement.querySelector(
 assert.equal(root.querySelector('.due').querySelector('.task-points, .task-recurrence'),null);
 assert.equal(root.querySelectorAll('.task-points').length,1);
 weeklyTask.points=0;card.hass=hass;
-assert.equal(root.querySelector('.task-points').textContent,'0');
+assert.equal(root.querySelector('.task-points'),null);
 weeklyTask.points=null;delete weeklyTask.interval_type;card.hass=hass;
 assert.equal(root.querySelector('.task-points'),null);
 assert.equal(root.querySelector('.task-recurrence'),null);
@@ -65,7 +68,8 @@ hass.states['todo.all'].attributes.tasks[0].labels=[{id:1,name:'maintenance'}];
 hass.states['todo.all'].attributes.tasks[1].labels=['household'];
 card.setConfig({entity:'todo.all',user_id:1,labels:['maintenance']});
 assert.equal(root.querySelectorAll('.row').length,1);
-assert.equal(root.querySelector('.name').textContent,'Weekly');
+// The points badge sits inside .name; compare the task's own name text.
+assert.equal(root.querySelector('.name').firstChild.textContent,'Weekly');
 card.setConfig({entity:'todo.all',user_id:1,labels:['missing']});
 assert.equal(root.querySelectorAll('.row').length,0);
 assert.match(root.querySelector('.empty').textContent,/Labels: missing/);
@@ -107,6 +111,8 @@ assert.equal(root.querySelector('.task-points').textContent,'1');
 assert.equal(root.querySelector('.task-recurrence').textContent,'Every 6 weeks');
 assert.equal(root.querySelector('.task-label').style.backgroundColor,'#0288d1');
 assert.equal(root.querySelector('ha-card').dataset.spacing,'comfortable');
+// Points badges are on by default; later checks compare plain task names.
+weeklyTask.points=null;
 card.setConfig({entity:'todo.all',user_id:1,show_labels:true,use_label_colors:true});
 assert.equal(root.querySelector('.task-label').style.color,'#ffffff');
 assert.equal(root.querySelectorAll('.task-label')[1].style.color,'#000000');
