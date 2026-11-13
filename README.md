@@ -497,3 +497,11 @@ tasks and existing Thing-trigger schedules are also supported; configure new
 Thing triggers in Donetick. Switching to a Thing-trigger or always-available
 schedule disables reminders, as required by Donetick. Switching away from a
 Thing-trigger schedule removes that trigger association.
+
+## Releasing
+
+Merging a pull request into `main` publishes a release when the PR has a `major`,
+`minor` or `patch` label. The Release workflow bumps `version` in `manifest.json`,
+commits it to `main`, tags the commit (for example `v2.1.0`) and creates a GitHub
+release with generated notes. If a PR has more than one of these labels, the largest
+bump wins. PRs without any of them are merged without a release.
