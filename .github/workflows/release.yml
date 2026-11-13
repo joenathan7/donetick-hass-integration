@@ -1,0 +1,109 @@
+name: Release
+
+# When a PR is merged into main, bump the integration version according to the
+# PR's label (major, minor or patch), commit it, tag it and publish a release.
+# PRs without one of those labels are merged without a release.
+on:
+  # pull_request_target runs with this repository's token, so PRs opened from
+  # forks can release too. It never checks out or runs code from the PR itself:
+  # it reads the PR's labels and works on main after the merge.
+  pull_request_target:
+    types: [closed]
+    branches: [main]
+
+permissions:
+  contents: write
+
+# One release at a time, so two quick merges cannot claim the same version.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Choose version bump from PR labels
+        id: bump
+        env:
+          LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
+        run: |
+          # The largest bump wins when a PR carries more than one label.
+          bump=none
+          for level in patch minor major; do
+            if jq -e --arg level "$level" 'map(ascii_downcase) | index($level)' <<<"$LABELS" >/dev/null; then
+              bump=$level
+            fi
+          done
+          echo "bump=$bump" >> "$GITHUB_OUTPUT"
+          if [ "$bump" = none ]; then
+            echo "::notice::PR #${{ github.event.pull_request.number }} has no major, minor or patch label; skipping release."
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.bump.outputs.bump != 'none'
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Bump manifest version
+        id: version
+        if: steps.bump.outputs.bump != 'none'
+        env:
+          BUMP: ${{ steps.bump.outputs.bump }}
+        run: |
+          shopt -s nullglob
+          manifests=(custom_components/*/manifest.json)
+          if [ "${#manifests[@]}" -ne 1 ]; then
+            echo "::error::Expected exactly one custom_components/*/manifest.json, found ${#manifests[@]}"
+            exit 1
+          fi
+          manifest=${manifests[0]}
+
+          current=$(jq -r .version "$manifest")
+          if ! [[ $current =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+            echo "::error file=$manifest::Version '$current' is not MAJOR.MINOR.PATCH"
+            exit 1
+          fi
+          major=${BASH_REMATCH[1]} minor=${BASH_REMATCH[2]} patch=${BASH_REMATCH[3]}
+          case $BUMP in
+            major) major=$((major + 1)); minor=0; patch=0 ;;
+            minor) minor=$((minor + 1)); patch=0 ;;
+            patch) patch=$((patch + 1)) ;;
+          esac
+          next="$major.$minor.$patch"
+
+          if git rev-parse -q --verify "refs/tags/v$next" >/dev/null; then
+            echo "::error::Tag v$next already exists; fix the version in $manifest"
+            exit 1
+          fi
+
+          jq --arg version "$next" '.version = $version' "$manifest" > "$manifest.tmp"
+          mv "$manifest.tmp" "$manifest"
+          echo "Bumping $current -> $next ($BUMP)"
+          echo "manifest=$manifest" >> "$GITHUB_OUTPUT"
+          echo "version=$next" >> "$GITHUB_OUTPUT"
+
+      - name: Commit and tag
+        if: steps.bump.outputs.bump != 'none'
+        env:
+          MANIFEST: ${{ steps.version.outputs.manifest }}
+          VERSION: ${{ steps.version.outputs.version }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$MANIFEST"
+          git commit -m "Release v$VERSION" -m "Version bump for #$PR."
+          # main may have moved since checkout; replay the bump on top once.
+          git push origin HEAD:main || { git pull --rebase origin main && git push origin HEAD:main; }
+          git tag -a "v$VERSION" -m "v$VERSION"
+          git push origin "v$VERSION"
+
+      - name: Create GitHub release
+        if: steps.bump.outputs.bump != 'none'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: gh release create "v$VERSION" --title "v$VERSION" --verify-tag --generate-notes

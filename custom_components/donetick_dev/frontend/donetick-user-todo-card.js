@@ -251,7 +251,7 @@ class DonetickUserTodoCard extends HTMLElement {
     if (config.complete_as_picker !== undefined && !['chips','dropdown'].includes(config.complete_as_picker)) throw new Error('Choose a valid Complete as picker');
     if (config.upcoming_days !== undefined && (!Number.isInteger(Number(config.upcoming_days)) || Number(config.upcoming_days) < 0 || Number(config.upcoming_days) > 365)) throw new Error('Days ahead must be a whole number from 0 to 365');
     this._config = {task_view:'both', completed_days:1, completed_filter:'all', completed_limit:0, row_spacing:'auto', display_filter:'all', sort_by:'due_date', button_style: 'text', button_size: 'compact', button_shape: 'rounded',
-      button_content: 'icon', complete_control: 'checkbox', credit_completion: 'assignee', complete_as_picker: 'chips', include_overdue:true, include_anyone:false, due_display:'date', show_labels:false, show_points:false, show_recurrence:false, use_label_colors:false, show_assignee:true, show_complete:true, show_complete_as:false, show_postpone:true, show_due_date:true, show_reassign:true, allow_any_assignee:false, ...config, completed_days:config.completed_days ?? 1, completed_limit:config.completed_limit ?? 0, labels:taskLabels(config.labels), user_id: config.user_id === undefined || config.user_id === 'all' ? 'all' : Number(config.user_id), upcoming_days:upcomingDayLimit(config.upcoming_days)};
+      button_content: 'icon', complete_control: 'checkbox', credit_completion: 'assignee', complete_as_picker: 'chips', include_overdue:true, include_anyone:false, due_display:'date', show_labels:false, show_points:true, show_recurrence:false, use_label_colors:false, show_assignee:true, show_complete:true, show_complete_as:false, show_postpone:true, show_due_date:true, show_reassign:true, allow_any_assignee:false, ...config, completed_days:config.completed_days ?? 1, completed_limit:config.completed_limit ?? 0, labels:taskLabels(config.labels), user_id: config.user_id === undefined || config.user_id === 'all' ? 'all' : Number(config.user_id), upcoming_days:upcomingDayLimit(config.upcoming_days)};
     if (this._panel && this._panel.kind !== 'details' && !(this._panel.kind === 'performer' ? this.offersCompleteAs()
       : this._config[{skip:'show_postpone',date:'show_due_date',assign:'show_reassign'}[this._panel.kind]])) this._panel = null;
     this._configInputSignature = signature;
@@ -456,7 +456,8 @@ class DonetickUserTodoCard extends HTMLElement {
       text.addEventListener('keydown', event => { if (event.key === 'Escape' && this._panel?.kind === 'details') { event.stopPropagation(); this.closePanel(); } });
       }
       const name = addText(text, 'span', task.name, 'name');
-      if (this._config.show_points && Number.isFinite(task.points)) {
+      // Only tasks worth something get a badge; unset and zero points show nothing.
+      if (this._config.show_points && Number.isFinite(task.points) && task.points > 0) {
         const label = `${task.points} ${task.points === 1 ? 'point' : 'points'}`;
         const badge = addText(name, 'span', String(task.points), 'task-points');
         badge.title = `Task value: ${label}`; badge.setAttribute('aria-label', label);
@@ -751,7 +752,7 @@ const EDITOR_DEFAULTS = {
   completed_days:1, completed_filter:'all', completed_limit:0,
   row_spacing:'auto',
   credit_completion:'assignee', complete_as_picker:'chips',
-  display_filters:[], label_match:'any', sort_by:'due_date', upcoming_days:7, include_anyone:false, due_display:'date', show_labels:false, show_points:false, show_recurrence:false, use_label_colors:false, show_assignee:true, show_complete:true, show_complete_as:false, show_postpone:true, show_due_date:true, show_reassign:true, allow_any_assignee:false, complete_control:'checkbox', button_style:'text', button_size:'compact',
+  display_filters:[], label_match:'any', sort_by:'due_date', upcoming_days:7, include_anyone:false, due_display:'date', show_labels:false, show_points:true, show_recurrence:false, use_label_colors:false, show_assignee:true, show_complete:true, show_complete_as:false, show_postpone:true, show_due_date:true, show_reassign:true, allow_any_assignee:false, complete_control:'checkbox', button_style:'text', button_size:'compact',
   button_shape:'rounded', button_content:'icon', complete_label:'Complete', postpone_label:'Skip occurrence',
   due_date_label:'Change due date', complete_icon:'mdi:check', postpone_icon:'mdi:calendar-arrow-right',
   due_date_icon:'mdi:calendar-edit', reassign_label:'Reassign', reassign_icon:'mdi:account-switch-outline', complete_as_label:'Complete as', complete_as_icon:'mdi:account-check-outline',
@@ -770,7 +771,7 @@ const EDITOR_HELP = {
   completed_days:'Today is 1 day. Leave empty for today. Includes today and the previous days, up to 7 days of history. The most recent completions appear first.',
   completed_filter:'All completions includes tasks finished in this period regardless of their due date. Match task date filter uses the occurrence’s original due date, so Tomorrow’s next occurrence does not hide a task completed today.',
   completed_limit:'Maximum completed entries to show, newest first. Use 0 for all matching entries. Does not limit pending tasks.',
-  show_points:'Show a small points badge beside the task name. Tasks without points omit the badge.',
+  show_points:'Show a small points badge beside the task name. Tasks without points, or worth 0 points, omit the badge.',
   show_recurrence:'Show the recurrence on its own muted line, including the unit for interval schedules.',
   row_spacing:'Auto adds space to tasks with visible labels. Compact keeps all rows tight; Comfortable adds space to every task.',
   labels:'Filter by selected labels. Leave empty for all labels. Choices come from this list’s tasks; set the integration’s task window to 0 to include distant tasks.',

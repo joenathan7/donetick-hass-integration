@@ -152,13 +152,13 @@ browser's local calendar days for its configured history period.
 History requires access to Donetick's `/api/v1/chores/history` endpoint; unavailable
 history leaves pending-task functionality intact.
 
-Under **Task details**, enable **Show task points** or **Show recurrence** to display
-points as a small badge beside the task name and recurrence on a separate muted line.
-The due date and assignee keep their existing layout. Both options are off by default and also work in YAML:
-`show_points: true` and `show_recurrence: true`. For example, an interval task can show
-`10 points · Every 6 weeks`. Explicit zero points are shown; unset points and incomplete
-interval metadata are omitted. The task sensors expose these values independently
-of the card options.
+Tasks worth points show them as a small badge beside the task name. Tasks without
+points, or worth 0 points, show no badge. Turn off **Show task points** under
+**Task details** (`show_points: false`) to hide the badges. Enable **Show recurrence**
+(`show_recurrence: true`, off by default) to show recurrence on a separate muted line.
+The due date and assignee keep their existing layout. For example, an interval task
+can show `10 points · Every 6 weeks`. Incomplete interval metadata is omitted. The
+task sensors expose these values independently of the card options.
 
 Choose one or more **Labels** in the card editor. With two or more selected, **Match labels** offers **Any selected label (OR)** (the default) or **All selected labels (AND)**. Leave the selection empty to show all labels, including unlabelled tasks. Label names are matched exactly and combine with the assigned-user, date and sorting settings. Choices come from tasks in the selected Donetick list; saved selections remain available even when no current task has those labels. YAML supports `label_match: any` or `label_match: all`.
 
@@ -497,3 +497,11 @@ tasks and existing Thing-trigger schedules are also supported; configure new
 Thing triggers in Donetick. Switching to a Thing-trigger or always-available
 schedule disables reminders, as required by Donetick. Switching away from a
 Thing-trigger schedule removes that trigger association.
+
+## Releasing
+
+Merging a pull request into `main` publishes a release when the PR has a `major`,
+`minor` or `patch` label. The Release workflow bumps `version` in `manifest.json`,
+commits it to `main`, tags the commit (for example `v2.1.0`) and creates a GitHub
+release with generated notes. If a PR has more than one of these labels, the largest
+bump wins. PRs without any of them are merged without a release.
