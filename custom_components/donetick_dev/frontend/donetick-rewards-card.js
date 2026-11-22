@@ -79,7 +79,7 @@ class DonetickRewardsCard extends HTMLElement {
         const serviceData = { reward_id: Number(button.dataset.reward) };
         if (button.dataset.entry) serviceData.config_entry_id = button.dataset.entry;
         if (button.dataset.user) serviceData.user_id = Number(button.dataset.user);
-        await this._hass.callService('donetick', 'redeem_reward', serviceData);
+        await this._hass.callService('donetick_dev', 'redeem_reward', serviceData);
         this._requested = this._requested || new Set();
         this._requested.add(button.dataset.key);
         this.render();
@@ -99,7 +99,7 @@ class DonetickRewardsCard extends HTMLElement {
     }[char]));
   }
 
-  static getConfigElement() { return document.createElement('donetick-rewards-card-editor'); }
+  static getConfigElement() { return document.createElement('donetick-dev-rewards-card-editor'); }
   static getStubConfig() { return {}; }
 }
 
@@ -177,9 +177,9 @@ class DonetickRewardsCardEditor extends HTMLElement {
 
 }
 
-if (!customElements.get('donetick-rewards-card')) customElements.define('donetick-rewards-card', DonetickRewardsCard);
-if (!customElements.get('donetick-rewards-card-editor')) customElements.define('donetick-rewards-card-editor', DonetickRewardsCardEditor);
+if (!customElements.get('donetick-dev-rewards-card')) customElements.define('donetick-dev-rewards-card', DonetickRewardsCard);
+if (!customElements.get('donetick-dev-rewards-card-editor')) customElements.define('donetick-dev-rewards-card-editor', DonetickRewardsCardEditor);
 window.customCards = window.customCards || [];
-if (!window.customCards.some(card => card.type === 'donetick-rewards-card')) {
-  window.customCards.push({ type: 'donetick-rewards-card', name: 'Donetick Rewards', description: 'Browse and request Donetick rewards' });
+if (!window.customCards.some(card => card.type === 'donetick-dev-rewards-card')) {
+  window.customCards.push({ type: 'donetick-dev-rewards-card', name: 'Donetick (Dev) Rewards', description: 'Browse and request Donetick rewards' });
 }

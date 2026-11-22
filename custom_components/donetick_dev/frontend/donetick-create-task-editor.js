@@ -1,4 +1,4 @@
-const editorTag = "donetick-create-task-editor";
+const editorTag = "donetick-dev-create-task-editor";
 const mainGroup = "main";
 const availableGroup = "available";
 const appearance = [

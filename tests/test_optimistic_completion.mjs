@@ -5,14 +5,14 @@ Object.assign(globalThis, {window, document:window.document, HTMLElement:window.
   customElements:window.customElements, CustomEvent:window.CustomEvent});
 customElements.define('ha-form',class extends HTMLElement {});
 customElements.define('home-assistant',class extends HTMLElement {});
-await import('../custom_components/donetick/frontend/donetick-user-todo-card.js');
+await import('../custom_components/donetick_dev/frontend/donetick-user-todo-card.js');
 const tasks = [1,2].map(task_id=>({task_id,assigned_to:1,name:`Task ${task_id}`,can_postpone:true}));
 const calls=[];
 const hass={states:{'todo.all':{attributes:{config_entry_id:'entry',
   circle_members:[{user_id:1,display_name:'Casey'}],tasks}}},
   callService:(...args)=>new Promise((resolve,reject)=>calls.push({args,resolve,reject}))};
 const makeCard=config=>{
-  const card=document.createElement('donetick-user-todo-card');
+  const card=document.createElement('donetick-dev-user-todo-card');
   card.setConfig({entity:'todo.all',task_view:'pending',...config});card.hass=hass;return card;
 };
 // Control the success timers without sleeping through a slow server request.

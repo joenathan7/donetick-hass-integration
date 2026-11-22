@@ -1,6 +1,6 @@
 await customElements.whenDefined("home-assistant");
 
-const cardType = "donetick-create-task-card";
+const cardType = "donetick-dev-create-task-card";
 const defaultFields = ["name", "description", "due_date", "due_time", "assignee"];
 const defaultSections = {
   "Priority and points": ["priority", "points"],
@@ -306,7 +306,7 @@ class DonetickCreateTaskCard extends HTMLElement {
     this.form.disabled = true;
     this.showStatus("Creating task…");
     try {
-      await this.homeAssistant.callService("donetick", "create_task", data);
+      await this.homeAssistant.callService("donetick_dev", "create_task", data);
       this.form.data = structuredClone(this.config.defaults);
       this.updateSchema();
       this.showStatus(`Created “${data.name}”.`);
@@ -325,7 +325,7 @@ window.customCards ??= [];
 if (!window.customCards.some(({ type }) => type === cardType)) {
   window.customCards.push({
     type: cardType,
-    name: "Donetick Create Task",
+    name: "Donetick (Dev) Create Task",
     description: "Create a Donetick task from a dashboard.",
   });
 }

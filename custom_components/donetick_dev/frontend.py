@@ -7,26 +7,18 @@ from homeassistant.components.frontend import add_extra_js_url
 from homeassistant.components.http import StaticPathConfig
 from homeassistant.core import HomeAssistant
 
-<<<<<<< HEAD:custom_components/donetick_dev/frontend.py
-CARD_URL = "/donetick_dev/donetick-user-todo-card.js"
-CARD_FILE = Path(__file__).parent / "frontend" / "donetick-user-todo-card.js"
-ACTION_URL = "/donetick_dev/donetick-action-editor.js"
-ACTION_FILE = Path(__file__).parent / "frontend" / "donetick-action-editor.js"
-DATA_FRONTEND = "donetick_dev_frontend"
-=======
 FRONTEND_DIR = Path(__file__).parent / "frontend"
-CARD_URL = "/donetick/donetick-user-todo-card.js"
+CARD_URL = "/donetick_dev/donetick-user-todo-card.js"
 CARD_FILE = FRONTEND_DIR / "donetick-user-todo-card.js"
-ACTION_URL = "/donetick/donetick-action-editor.js"
+ACTION_URL = "/donetick_dev/donetick-action-editor.js"
 ACTION_FILE = FRONTEND_DIR / "donetick-action-editor.js"
-REWARDS_URL = "/donetick/donetick-rewards-card.js"
+REWARDS_URL = "/donetick_dev/donetick-rewards-card.js"
 REWARDS_FILE = FRONTEND_DIR / "donetick-rewards-card.js"
-CREATE_CARD_URL = "/donetick/donetick-create-task-card.js"
+CREATE_CARD_URL = "/donetick_dev/donetick-create-task-card.js"
 CREATE_CARD_FILE = FRONTEND_DIR / "donetick-create-task-card.js"
-CREATE_EDITOR_URL = "/donetick/donetick-create-task-editor.js"
+CREATE_EDITOR_URL = "/donetick_dev/donetick-create-task-editor.js"
 CREATE_EDITOR_FILE = FRONTEND_DIR / "donetick-create-task-editor.js"
-DATA_FRONTEND = "donetick_frontend"
->>>>>>> 08829ddcaac572a30a45bb190e16b0d3a24516f9:custom_components/donetick/frontend.py
+DATA_FRONTEND = "donetick_dev_frontend"
 
 
 def _module_version(*files: Path) -> str:

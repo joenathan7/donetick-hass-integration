@@ -300,7 +300,7 @@ class DonetickUserTodoCard extends HTMLElement {
     if (config.complete_control !== undefined && !['checkbox','initials','button'].includes(config.complete_control)) throw new Error('Choose a valid completion control');
     if (config.upcoming_days !== undefined && (!Number.isInteger(Number(config.upcoming_days)) || Number(config.upcoming_days) < 0 || Number(config.upcoming_days) > 365)) throw new Error('Days ahead must be a whole number from 0 to 365');
     this._config = {task_view:'both', completed_days:1, completed_filter:'all', completed_limit:0, row_spacing:'auto', display_filter:'all', sort_by:'due_date', button_style: 'text', button_size: 'compact', button_shape: 'rounded',
-      button_content: 'icon', optimistic_completion:false, completion_strikethrough:true, complete_control: 'checkbox', credit_completion: 'assignee', complete_as_picker: 'chips', include_overdue:true, include_anyone:false, due_display:'date', show_labels:false, show_points:false, show_recurrence:false, use_label_colors:false, show_assignee:true, show_complete:true, show_complete_as:false, show_postpone:true, show_due_date:true, show_reassign:true, allow_any_assignee:false, ...config, completed_days:config.completed_days ?? 1, completed_limit:config.completed_limit ?? 0, labels:taskLabels(config.labels), user_id: config.user_id === undefined || config.user_id === 'all' ? 'all' : Number(config.user_id), upcoming_days:upcomingDayLimit(config.upcoming_days)};
+      button_content: 'icon', optimistic_completion:false, completion_strikethrough:true, complete_control: 'checkbox', credit_completion: 'assignee', complete_as_picker: 'chips', include_overdue:true, include_anyone:false, due_display:'date', show_labels:false, show_points:true, show_recurrence:false, use_label_colors:false, show_assignee:true, show_complete:true, show_complete_as:false, show_postpone:true, show_due_date:true, show_reassign:true, allow_any_assignee:false, ...config, completed_days:config.completed_days ?? 1, completed_limit:config.completed_limit ?? 0, labels:taskLabels(config.labels), user_id: config.user_id === undefined || config.user_id === 'all' ? 'all' : Number(config.user_id), upcoming_days:upcomingDayLimit(config.upcoming_days)};
     if (this._panel && this._panel.kind !== 'details' && !(this._panel.kind === 'performer' ? this.offersCompleteAs()
       : this._config[{skip:'show_postpone',date:'show_due_date',assign:'show_reassign'}[this._panel.kind]])) this._panel = null;
     this._configInputSignature = signature;
@@ -389,7 +389,7 @@ class DonetickUserTodoCard extends HTMLElement {
       if (assignedTo !== undefined) data.assigned_to = assignedTo;
       if (completedBy !== undefined) data.completed_by = completedBy;
       if (complete && task.next_due_date) data.expected_due_date = task.next_due_date;
-      await this._hass.callService('donetick', dueDate || assignedTo !== undefined ? 'update_task' : complete ? 'complete_assigned_task' : 'postpone_task', data);
+      await this._hass.callService('donetick_dev', dueDate || assignedTo !== undefined ? 'update_task' : complete ? 'complete_assigned_task' : 'postpone_task', data);
       if (context !== this._actionContext) return;
       // Only a completion Donetick accepted moves its person to the front.
       if (completedBy !== undefined) this.rememberPerformer(completedBy);
@@ -894,7 +894,7 @@ const EDITOR_DEFAULTS = {
   completed_days:1, completed_filter:'all', completed_limit:0,
   row_spacing:'auto',
   optimistic_completion:false, completion_strikethrough:true, credit_completion:'assignee', complete_as_picker:'chips',
-  display_filters:[], label_match:'any', sort_by:'due_date', upcoming_days:7, include_anyone:false, due_display:'date', show_labels:false, show_points:false, show_recurrence:false, use_label_colors:false, show_assignee:true, show_complete:true, show_complete_as:false, show_postpone:true, show_due_date:true, show_reassign:true, allow_any_assignee:false, complete_control:'checkbox', button_style:'text', button_size:'compact',
+  display_filters:[], label_match:'any', sort_by:'due_date', upcoming_days:7, include_anyone:false, due_display:'date', show_labels:false, show_points:true, show_recurrence:false, use_label_colors:false, show_assignee:true, show_complete:true, show_complete_as:false, show_postpone:true, show_due_date:true, show_reassign:true, allow_any_assignee:false, complete_control:'checkbox', button_style:'text', button_size:'compact',
   button_shape:'rounded', button_content:'icon', complete_label:'Complete', postpone_label:'Skip occurrence',
   due_date_label:'Change due date', complete_icon:'mdi:check', postpone_icon:'mdi:calendar-arrow-right',
   due_date_icon:'mdi:calendar-edit', reassign_label:'Reassign', reassign_icon:'mdi:account-switch-outline', complete_as_label:'Complete as', complete_as_icon:'mdi:account-check-outline',

@@ -6,7 +6,7 @@ from types import SimpleNamespace
 import unittest
 from unittest.mock import AsyncMock
 
-COMPONENT = Path(__file__).resolve().parents[1] / "custom_components" / "donetick"
+COMPONENT = Path(__file__).resolve().parents[1] / "custom_components" / "donetick_dev"
 DOMAIN = "donetick"
 
 

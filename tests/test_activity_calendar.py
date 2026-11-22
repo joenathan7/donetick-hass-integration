@@ -8,7 +8,7 @@ from typing import List, Optional
 import unittest
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-COMPONENT = Path(__file__).resolve().parents[1] / "custom_components" / "donetick"
+COMPONENT = Path(__file__).resolve().parents[1] / "custom_components" / "donetick_dev"
 
 
 def _load_activity_calendar():

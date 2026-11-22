@@ -5,7 +5,7 @@ Object.assign(globalThis, {window, document: window.document, HTMLElement: windo
   customElements: window.customElements, CustomEvent: window.CustomEvent});
 customElements.define('ha-form',class extends HTMLElement {});
 customElements.define('home-assistant',class extends HTMLElement {});
-await import('../custom_components/donetick/frontend/donetick-user-todo-card.js');
+await import('../custom_components/donetick_dev/frontend/donetick-user-todo-card.js');
 const tick=()=>new Promise(resolve=>setTimeout(resolve,0));
 const calls=[]; let fail=false;
 const hass={locale:{language:'en'},states:{'todo.all':{state:'3',attributes:{config_entry_id:'entry',
@@ -15,7 +15,7 @@ const hass={locale:{language:'en'},states:{'todo.all':{state:'3',attributes:{con
     {task_id:2,assigned_to:null,name:'Shared',can_postpone:false},
     {task_id:3,assigned_to:3,name:'Rotating',can_postpone:false}
   ]}}},callService:async(...args)=>{calls.push(args);if(fail)throw new Error('Permission denied');}};
-const card=document.createElement('donetick-user-todo-card');
+const card=document.createElement('donetick-dev-user-todo-card');
 const base={entity:'todo.all',user_id:'all',complete_control:'initials'};
 card.setConfig(base);card.hass=hass;document.body.append(card);
 const root=card.shadowRoot;
@@ -55,7 +55,7 @@ console.log('An unresolved assignee falls back to the name the title shows');
 
 // A completion from the circle behaves like the checkbox, including the pending state.
 circles()[0].click();
-assert.deepEqual(calls.pop(),['donetick','complete_assigned_task',{task_id:1,config_entry_id:'entry',expected_due_date:'2026-10-20T16:00:00Z'}]);
+assert.deepEqual(calls.pop(),['donetick_dev','complete_assigned_task',{task_id:1,config_entry_id:'entry',expected_due_date:'2026-10-20T16:00:00Z'}]);
 assert.ok(circles()[0].disabled);
 await tick();
 assert.equal(root.querySelectorAll('.completed .complete-initials').length,1);
@@ -83,7 +83,7 @@ assert.equal(circles().length,0);
 console.log('The circle is opt-in and leaves the checkbox and button styles untouched');
 
 // With credit_completion: choose the circle asks who did the work, like the checkbox.
-const asking=document.createElement('donetick-user-todo-card');
+const asking=document.createElement('donetick-dev-user-todo-card');
 asking.setConfig({...base,credit_completion:'choose'});asking.hass=hass;document.body.append(asking);
 const askRoot=asking.shadowRoot;
 const askCircles=()=>[...askRoot.querySelectorAll('.complete-initials')];

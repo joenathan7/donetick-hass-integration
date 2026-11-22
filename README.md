@@ -213,7 +213,7 @@ views or appearance presets. Completed entries are always filtered by the select
 performer and list/project. For tasks due today with their completed occurrences:
 
 ```yaml
-type: custom:donetick-user-todo-card
+type: custom:donetick-dev-user-todo-card
 entity: todo.all_tasks
 user_id: all
 display_filters: [today]
@@ -275,7 +275,7 @@ YAML supports `use_label_colors: true` alongside `show_labels: true`.
 For a maintenance dashboard with tasks due months ahead, set the integration's upcoming-task window to **0** (unlimited). Then leave **Pending task dates** empty for all tasks, or select **Overdue**, **Today** and **Future** with **Days ahead** empty or **0**. A card cannot show tasks excluded by the integration's window. YAML supports the same selections:
 
 ```yaml
-type: custom:donetick-user-todo-card
+type: custom:donetick-dev-user-todo-card
 entity: todo.all_tasks
 user_id: all
 labels:
@@ -329,7 +329,7 @@ YAML also supports `show_complete: false`, `show_postpone: false`, and
 The card respects the integration's upcoming-task window. Set it to 0 to show all tasks.
 
 ```yaml
-type: custom:donetick-user-todo-card
+type: custom:donetick-dev-user-todo-card
 entity: todo.all_tasks
 user_id: 1
 display_filters: []
@@ -630,7 +630,7 @@ Thing-trigger schedule removes that trigger association.
 
 ### Reward catalog and approval events
 
-The **Donetick Rewards** card lists active rewards with descriptions and point prices, shows the existing per-member Points entities, and can request a reward. Add it independently with `type: custom:donetick-rewards-card`.
+The **Donetick Rewards** card lists active rewards with descriptions and point prices, shows the existing per-member Points entities, and can request a reward. Add it independently with `type: custom:donetick-dev-rewards-card`.
 
 To configure approval webhooks:
 

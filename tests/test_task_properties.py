@@ -10,7 +10,7 @@ from unittest.mock import AsyncMock
 
 from test_recurrence import task_fixture
 
-COMPONENT = Path(__file__).resolve().parents[1] / 'custom_components/donetick'
+COMPONENT = Path(__file__).resolve().parents[1] / 'custom_components/donetick_dev'
 PROPERTIES = runpy.run_path(str(COMPONENT / 'task_properties.py'))
 RECURRENCE = runpy.run_path(str(COMPONENT / 'recurrence.py'))
 apply = PROPERTIES['apply_task_properties']

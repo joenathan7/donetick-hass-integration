@@ -252,7 +252,7 @@ assert.equal(root.querySelectorAll('form').length,1);assert.equal(root.querySele
 document.body.dispatchEvent(new window.PointerEvent('pointerdown',{bubbles:true}));assert.equal(root.querySelector('form'),null);
 const completingDue=hass.states['todo.all'].attributes.tasks[0].next_due_date;
 root.querySelector('[aria-label="Complete: Weekly"]').dispatchEvent(new window.Event('change'));await tick();
-assert.deepEqual(calls.pop(),['donetick','complete_assigned_task',{task_id:1,config_entry_id:'entry',expected_due_date:completingDue}]);assert.ok(root.querySelector('.completed input').checked);
+assert.deepEqual(calls.pop(),['donetick_dev','complete_assigned_task',{task_id:1,config_entry_id:'entry',expected_due_date:completingDue}]);assert.ok(root.querySelector('.completed input').checked);
 await new Promise(resolve=>setTimeout(resolve,1050));
 assert.equal(root.querySelector('[aria-label="Complete: Weekly"]'),null,'Accepted completion stays hidden while HA has the old occurrence');
 // Simulate the coordinator delivering the recurring task's next occurrence.

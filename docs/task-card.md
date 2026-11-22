@@ -26,7 +26,7 @@ On a dashboard you can edit in Home Assistant, open the card's visual editor to 
 For a YAML dashboard, start with the card type and add any overrides you need. For example, this shows three fields and assigns five points to each new task.
 
 ```yaml
-type: custom:donetick-create-task-card
+type: custom:donetick-dev-create-task-card
 fields:
   - name
   - due_date
@@ -99,7 +99,7 @@ Under **Completed tasks**, configure:
 Completed items also follow the selected user and list/project. These controls are hidden in pending-only mode and retained when changing views or presets.
 
 ```yaml
-type: custom:donetick-user-todo-card
+type: custom:donetick-dev-user-todo-card
 entity: todo.all_tasks
 user_id: all
 display_filters: [today]

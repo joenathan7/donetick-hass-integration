@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 from types import SimpleNamespace
 
-COMPONENT = Path(__file__).resolve().parents[1] / "custom_components" / "donetick"
+COMPONENT = Path(__file__).resolve().parents[1] / "custom_components" / "donetick_dev"
 DOMAIN = "donetick"
 
 

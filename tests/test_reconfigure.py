@@ -18,7 +18,7 @@ class ClientResponseError(ClientError):
 
 class ReconfigureTests(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
-        root = Path(__file__).resolve().parents[1] / "custom_components/donetick"
+        root = Path(__file__).resolve().parents[1] / "custom_components/donetick_dev"
         tree = ast.parse((root / "config_flow.py").read_text(encoding="utf-8"))
         flow = next(node for node in tree.body if isinstance(node, ast.ClassDef)
                     and node.name == "DonetickConfigFlow")
