@@ -2,7 +2,9 @@
 import ast
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
+from html.parser import HTMLParser
 import logging
+import re
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any, List, Optional
@@ -39,8 +41,9 @@ class UserSensorTests(unittest.TestCase):
                          Optional=Optional, _LOGGER=logging.getLogger(__name__),
                          CoordinatorEntity=CoordinatorStub, SensorEntity=type("SensorStub", (), {}),
                          SensorStateClass=SimpleNamespace(TOTAL="total"), DOMAIN="donetick",
-                         dt_util=SimpleNamespace(now=lambda: NOW))
-        load_definitions("model.py", {"_parse_datetime", "DonetickTask", "DonetickMember"}, namespace)
+                         dt_util=SimpleNamespace(now=lambda: NOW), HTMLParser=HTMLParser, re=re)
+        load_definitions("model.py", {"_InlineImageParser", "_strip_inline_images", "_parse_datetime",
+                                       "DonetickTask", "DonetickMember"}, namespace)
         load_definitions("user_sensor.py", {"user_chore_summary", "DonetickUserSensor"}, namespace)
         cls.ns = namespace
 

@@ -26,10 +26,13 @@ class FrontendTests(unittest.IsolatedAsyncioTestCase):
         self.setup_frontend = namespace["async_setup_frontend"]
         self.card_file = namespace["CARD_FILE"]
         self.action_file = namespace["ACTION_FILE"]
+        self.rewards_file = namespace["REWARDS_FILE"]
+        self.create_card_file = namespace["CREATE_CARD_FILE"]
+        self.create_editor_file = namespace["CREATE_EDITOR_FILE"]
 
-        async def executor(fn):
+        async def executor(fn, *args):
             await asyncio.sleep(0)
-            return fn()
+            return fn(*args)
 
         self.hass = SimpleNamespace(data={}, async_add_executor_job=executor,
                                     http=SimpleNamespace(async_register_static_paths=AsyncMock()))
@@ -39,12 +42,21 @@ class FrontendTests(unittest.IsolatedAsyncioTestCase):
         await self.setup_frontend(self.hass)
         self.hass.http.async_register_static_paths.assert_awaited_once_with([
             ("/donetick_dev/donetick-user-todo-card.js", str(self.card_file), False),
-            ("/donetick_dev/donetick-action-editor.js", str(self.action_file), False)])
+            ("/donetick_dev/donetick-action-editor.js", str(self.action_file), False),
+            ("/donetick_dev/donetick-rewards-card.js", str(self.rewards_file), False),
+            ("/donetick_dev/donetick-create-task-card.js", str(self.create_card_file), False),
+            ("/donetick_dev/donetick-create-task-editor.js", str(self.create_editor_file), False)])
         version = sha256(self.card_file.read_bytes()).hexdigest()[:12]
         action_version = sha256(self.action_file.read_bytes()).hexdigest()[:12]
+        rewards_version = sha256(self.rewards_file.read_bytes()).hexdigest()[:12]
+        create_version = sha256(
+            self.create_card_file.read_bytes() + self.create_editor_file.read_bytes()
+        ).hexdigest()[:12]
         self.assertEqual(self.add_url.call_args_list, [
             ((self.hass, f"/donetick_dev/donetick-user-todo-card.js?v={version}"),),
-            ((self.hass, f"/donetick_dev/donetick-action-editor.js?v={action_version}"),)])
+            ((self.hass, f"/donetick_dev/donetick-action-editor.js?v={action_version}"),),
+            ((self.hass, f"/donetick_dev/donetick-rewards-card.js?v={rewards_version}"),),
+            ((self.hass, f"/donetick_dev/donetick-create-task-card.js?v={create_version}"),)])
 
     async def test_registration_failure_can_retry(self):
         self.hass.http.async_register_static_paths.side_effect = RuntimeError("Not ready")
@@ -53,7 +65,7 @@ class FrontendTests(unittest.IsolatedAsyncioTestCase):
         self.add_url.assert_not_called()
         self.hass.http.async_register_static_paths.side_effect = None
         await self.setup_frontend(self.hass)
-        self.assertEqual(self.add_url.call_count, 2)
+        self.assertEqual(self.add_url.call_count, 4)
 
     async def test_hacs_package_contains_card_and_setup_dependency(self):
         manifest = json.loads((ROOT / "custom_components/donetick_dev/manifest.json").read_text())
