@@ -1,0 +1,33 @@
+name: Release label
+
+# Every PR into main must carry a major, minor or patch label, which release.yml
+# uses to bump the version after the merge. Make the "require-release-label"
+# check required in main's branch protection so the PR cannot merge without one.
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, labeled, unlabeled]
+    branches: [main]
+
+# Only the event payload is read; no code is checked out.
+permissions: {}
+
+jobs:
+  require-release-label:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for a major, minor or patch label
+        env:
+          LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
+        run: |
+          # Same matching as release.yml: case-insensitive, the largest bump wins.
+          bump=none
+          for level in patch minor major; do
+            if jq -e --arg level "$level" 'map(ascii_downcase) | index($level)' <<<"$LABELS" >/dev/null; then
+              bump=$level
+            fi
+          done
+          if [ "$bump" = none ]; then
+            echo "::error::Add a major, minor or patch label to this PR before merging. It decides the next release version."
+            exit 1
+          fi
+          echo "::notice::Merging this PR will publish a $bump release."
